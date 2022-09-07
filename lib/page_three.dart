@@ -21,37 +21,39 @@ class PageThree extends StatelessWidget {
               ),
               SizedBox(height: 10,),
               Container(
+                height: 75,
+                decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
+                ),
+                child: Center(
+                  child: Text(
+                    "Web Hosting",
+                    style: TextStyle(
+                        fontSize: 35,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ),
+              Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey,width: 2)
+                  border: Border(
+                    left: BorderSide( color: Colors.grey,width: 2),
+                    right: BorderSide(color: Colors.grey,width: 2),
+                  ),
                 ),
+
                 child: Column(
                   children: [
-                    Container(
-                      height: 75,
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Web Hosting",
-                          style: TextStyle(
-                              fontSize: 35,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Divider(thickness: 2,),
+
                     RowWidget(heading:"Unmetered" ,subHeading: "Bandwidth (Unlimited)",),
                     RowWidget(heading:"cPanel" ,subHeading: "With 100% Uptime",),
                     RowWidget(heading:"20" ,subHeading: "eMail Accounts",),
                     RowWidget(heading:"Auto" ,subHeading: "Backups",),
-                    Divider(thickness: 2,),
+                    Divider(thickness: 2,color: Colors.grey,),
                     Text(
                       "20 GB Web Space",
                       style: TextStyle(
@@ -76,7 +78,7 @@ class PageThree extends StatelessWidget {
                           "Order Now"
                       ),
                     ),
-                    Divider(thickness: 2,),
+                    Divider(thickness: 2,color: Colors.grey,),
                     RowWidget(heading:"Free SSL" ,subHeading: "Free SSL",),
                     RowWidget(heading:"24/7" ,subHeading: "Live Support",),
                     RowWidget(heading:"Cloud" ,subHeading: "Storage",),
@@ -94,6 +96,11 @@ class PageThree extends StatelessWidget {
                   ],
                 ),
               ),
+              Container(
+                color: Colors.grey,
+                height: 2,
+                width: double.infinity,
+              )
 
 
             ],
