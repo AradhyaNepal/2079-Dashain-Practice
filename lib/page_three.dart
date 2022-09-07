@@ -15,11 +15,11 @@ class PageThree extends StatelessWidget {
           margin: EdgeInsets.all(10),
           child: Column(
             children: [
-              SizedBox(height: 10,),
+              SizedBox(height: 15,),
               Expanded(
                   child: Image.asset("assets/logo.png")
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 15,),
               Container(
                 height: 75,
                 decoration: BoxDecoration(
@@ -38,7 +38,6 @@ class PageThree extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   border: Border(
                     left: BorderSide( color: Colors.grey,width: 2),
@@ -48,11 +47,19 @@ class PageThree extends StatelessWidget {
 
                 child: Column(
                   children: [
+                    SizedBox(height: 10,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        children: [
+                          RowWidget(heading:"Unmetered" ,subHeading: "Bandwidth (Unlimited)",),
+                          RowWidget(heading:"cPanel" ,subHeading: "With 100% Uptime",),
+                          RowWidget(heading:"20" ,subHeading: "eMail Accounts",),
+                          RowWidget(heading:"Auto" ,subHeading: "Backups",),
+                        ],
+                      ),
+                    ),
 
-                    RowWidget(heading:"Unmetered" ,subHeading: "Bandwidth (Unlimited)",),
-                    RowWidget(heading:"cPanel" ,subHeading: "With 100% Uptime",),
-                    RowWidget(heading:"20" ,subHeading: "eMail Accounts",),
-                    RowWidget(heading:"Auto" ,subHeading: "Backups",),
                     Divider(thickness: 2,color: Colors.grey,),
                     Text(
                       "20 GB Web Space",
@@ -79,20 +86,30 @@ class PageThree extends StatelessWidget {
                       ),
                     ),
                     Divider(thickness: 2,color: Colors.grey,),
-                    RowWidget(heading:"Free SSL" ,subHeading: "Free SSL",),
-                    RowWidget(heading:"24/7" ,subHeading: "Live Support",),
-                    RowWidget(heading:"Cloud" ,subHeading: "Storage",),
-                    RowWidget(heading:"2 weeks" ,subHeading: "Two times auto backup",),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor:Colors.grey ),
-                        onPressed: (){},
-                        child: Text(
-                            "See More Features"
-                        ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        children: [
+                          RowWidget(heading:"Free SSL" ,subHeading: "Free SSL",),
+                          RowWidget(heading:"24/7" ,subHeading: "Live Support",),
+                          RowWidget(heading:"Cloud" ,subHeading: "Storage",),
+                          RowWidget(heading:"2 weeks" ,subHeading: "Two times auto backup",),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor:Colors.grey ),
+                              onPressed: (){},
+                              child: Text(
+                                  "See More Features"
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10,)
+                        ],
                       ),
                     ),
+
+
                   ],
                 ),
               ),
@@ -100,7 +117,8 @@ class PageThree extends StatelessWidget {
                 color: Colors.grey,
                 height: 2,
                 width: double.infinity,
-              )
+              ),
+              SizedBox(height: 10,)
 
 
             ],
