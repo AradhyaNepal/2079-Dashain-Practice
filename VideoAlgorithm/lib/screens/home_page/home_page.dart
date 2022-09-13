@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/common/constant.dart';
 import 'package:video_algorithm/metadata/assets_location.dart';
+import 'package:video_algorithm/screens/edit_video/videos_list.dart';
 import 'package:video_algorithm/screens/home_page/widgets/app_info_widget.dart';
 
 class HomePage extends StatelessWidget {
@@ -66,7 +67,7 @@ class HomePage extends StatelessWidget {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: ColorConstant.kSecondaryColor),
                     onPressed: (){
-
+                      Navigator.of(context).pushNamed(VideosList.route);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),

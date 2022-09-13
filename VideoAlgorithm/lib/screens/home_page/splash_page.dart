@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/common/constant.dart';
 import 'package:video_algorithm/metadata/assets_location.dart';
@@ -17,6 +19,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    Provider.of<VideosDatabase>(context,listen: false).initialize();
     Future.delayed(Duration(seconds: 3),(){
       Navigator.pushReplacementNamed(context, HomePage.route);
     });
