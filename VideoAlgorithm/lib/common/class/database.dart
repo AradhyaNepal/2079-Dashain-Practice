@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:video_algorithm/common/constant.dart';
-import 'package:video_algorithm/metadata/assets_location.dart';
 import 'package:video_algorithm/metadata/model/videos_model.dart';
 import 'package:video_player/video_player.dart';
 
@@ -9,6 +8,8 @@ class VideosDatabase with ChangeNotifier{
   static const String videoTableName="VideosTable",idCol="id",nameCol="name",locationCol="location",repetitionCol="repetition",defaultCol="isDefault",videoSecondCol="videoSeconds";
   bool isInitialized=false;
   Database? db;
+  List<VideoModel> videosList=[];
+  bool videosLoading=true;
 
   void initialize() async{
     var databasesPath = await getDatabasesPath();
@@ -27,6 +28,7 @@ class VideosDatabase with ChangeNotifier{
           print("Database created with initial data");
 
         });
+    await getVideosList();
     isInitialized=true;
     notifyListeners();
   }
@@ -79,15 +81,23 @@ class VideosDatabase with ChangeNotifier{
 
   }
 
-  Future<List<VideoModel>> getVideosList () async{
-    List<VideoModel> list=[];
+
+
+  Future<void> deleteAVideo(int id) async{
+    await db!.delete(videoTableName,where:"$idCol=?",whereArgs: [id] );
+    await getVideosList();
+    notifyListeners();
+  }
+  Future<void> getVideosList ({bool notify=false}) async{
+    videosList.clear();
     final data=await db!.rawQuery('SELECT * FROM $videoTableName');
     for(final value in data){
-      list.add(VideoModel.fromMap(value));
+      videosList.add(VideoModel.fromMap(value));
     }
-    print(data.length);
-    print(list.length);
-    return list;
+    videosLoading=false;
+    if(notify){
+      notifyListeners();
+    }
   }
   @override
   void dispose() {

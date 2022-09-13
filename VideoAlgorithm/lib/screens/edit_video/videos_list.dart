@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_algorithm/common/class/custom_snackbar.dart';
 import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/color.dart';
-import 'package:video_algorithm/metadata/model/videos_model.dart';
+import 'package:video_algorithm/screens/edit_video/add_video.dart';
+import 'package:video_algorithm/screens/edit_video/widgets/video_list_widget.dart';
 
 class VideosList extends StatelessWidget {
   static const String route="VideosList";
@@ -13,48 +15,51 @@ class VideosList extends StatelessWidget {
     final size=MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: ColorConstant.kSecondaryColor,
+          title: Row(
+            children: [
+              Text(
+                  "Your Videos"
+              ),
+              Spacer(),
+              Consumer<VideosDatabase>(
+                builder: (context,provider,child) {
+                  return IconButton(
+                    onPressed: (){
+                      if(provider.videosList.length==10){
+                        showCustomSnackBar(context, "Maximum 10 Videos Allowed");
+                      }else{
+                        Navigator.of(context).pushNamed(AddVideoPage.route);
+                      }
+                    },
+                    icon: Icon(
+                        Icons.add
+                    ),
+                  );
+                }
+              )
+            ],
+          ),
+        ),
         body: Container(
-          color: ColorConstant.kSecondaryColor,
-          padding: EdgeInsets.all(8),
+          color: ColorConstant.kPrimaryColor,
+          padding: EdgeInsets.only(top: 8,left: 8,right: 8),
           height: size.height,
           width: size.width,
           child: Consumer<VideosDatabase>(
             builder: (context,provider,child) {
-              if(!provider.isInitialized){
-                print("Initialized: ${provider.isInitialized}");
+              if(!provider.isInitialized && provider.videosLoading){
                 return Center(
-                  child: LinearProgressIndicator(),
+                  child: CircularProgressIndicator(color: ColorConstant.kSecondaryColor,),
                 );
               }
-              return FutureBuilder<List<VideoModel>>(
-                future: provider.getVideosList(),
-                builder: (context,snapShot) {
-                  if(snapShot.connectionState==ConnectionState.waiting){
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if(snapShot.hasError){
-                    print(snapShot.error.toString());
-                    print(snapShot.stackTrace.toString());
-                    return Text("Error");
-                  }
-                  List<VideoModel> value=snapShot.data!;
-                  return ListView.builder(
-                    itemCount:value.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                        height: 100,
-                        child: Text(
-                          value[index].name+" "+value[index].length.toString(),
-                          style: TextStyle(
-                            color: Colors.black
-                          ),
-                        ),
-                      );
-                    } ,
-                  );
-                }
+              return ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemCount:provider.videosList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return VideoListWidget(value: provider.videosList[index]);
+                } ,
               );
             }
           ),
@@ -63,3 +68,4 @@ class VideosList extends StatelessWidget {
     );
   }
 }
+
