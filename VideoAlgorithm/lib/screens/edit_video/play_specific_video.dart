@@ -33,11 +33,11 @@ class _PlaySpecificVideoState extends State<PlaySpecificVideo> {
       }else{
         controller = VideoPlayerController.file(File(model.location));
       }
+
       await controller.initialize();
       chewieController = ChewieController(
         fullScreenByDefault: false,
         allowFullScreen: false,
-        showOptions: false,
         videoPlayerController: controller,
         autoPlay: true,
         looping: true,
@@ -55,12 +55,29 @@ class _PlaySpecificVideoState extends State<PlaySpecificVideo> {
         body: loading
             ? Center(
           child: CircularProgressIndicator(),
-        ): Container(
-          color: Colors.black,
+        ): SizedBox(
+
           height: size.height,
           width: size.width,
-          child: Chewie(
-            controller: chewieController,
+          child: Stack(
+            children: [
+
+              Positioned.fill(
+                child: Chewie(
+                  controller: chewieController,
+                ),
+              ),
+              Positioned(
+                  top: 5,
+                  left: 5,
+                  child: IconButton(
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.close,color: Colors.red,),
+                  )
+              ),
+            ],
           ),
         ),
       ),
@@ -74,6 +91,7 @@ class _PlaySpecificVideoState extends State<PlaySpecificVideo> {
     ]);
     controller.dispose();
     chewieController.dispose();
+
     super.dispose();
   }
 }

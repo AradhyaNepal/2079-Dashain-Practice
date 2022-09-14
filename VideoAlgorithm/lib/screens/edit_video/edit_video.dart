@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_algorithm/common/class/custom_snackbar.dart';
 import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/common/theme.dart';
@@ -103,6 +104,7 @@ class _EditVideoState extends State<EditVideo> {
                         setState(() {
                           isSaving=false;
                         });
+                        showCustomSnackBar(context, "Successfully Edited");
                         Navigator.pop(context);
                       },
                       child: Padding(

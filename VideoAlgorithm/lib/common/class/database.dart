@@ -11,6 +11,7 @@ class VideosDatabase with ChangeNotifier{
   List<VideoModel> videosList=[];
   bool videosLoading=true;
 
+
   void initialize() async{
     var databasesPath = await getDatabasesPath();
     db = await openDatabase(databasesPath+Constant.databaseName, version: 1,
@@ -28,7 +29,7 @@ class VideosDatabase with ChangeNotifier{
           print("Database created with initial data");
 
         });
-    await getVideosList();
+    await extractVideosList();
     isInitialized=true;
     notifyListeners();
   }
@@ -91,14 +92,14 @@ class VideosDatabase with ChangeNotifier{
         where:"$idCol=?",
         whereArgs: [id]
     );
-    await getVideosList(notify: true);
+    await extractVideosList(notify: true);
   }
 
   Future<void> deleteAVideo(int id) async{
     await db!.delete(videoTableName,where:"$idCol=?",whereArgs: [id] );
-    await getVideosList(notify: true);
+    await extractVideosList(notify: true);
   }
-  Future<void> getVideosList ({bool notify=false}) async{
+  Future<void> extractVideosList ({bool notify=false}) async{
     videosList.clear();
     final data=await db!.rawQuery('SELECT * FROM $videoTableName');
     for(final value in data){
@@ -109,6 +110,8 @@ class VideosDatabase with ChangeNotifier{
       notifyListeners();
     }
   }
+
+
   @override
   void dispose() {
     // TODO: implement dispose

@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:video_algorithm/metadata/model/videos_model.dart';
+import 'package:video_algorithm/screens/edit_video/play_specific_video.dart';
 import 'package:video_algorithm/screens/edit_video/provider/add_video_provider.dart';
 
 import '../../../common/color.dart';
@@ -22,6 +24,7 @@ class _AddVideoWidgetState extends State<AddVideoWidget> {
   void initState() {
     // TODO: implement initState
     videoLocation=Provider.of<AddVideoProvider>(context,listen: false).videoLocation;
+    FocusManager.instance.primaryFocus?.unfocus();
     print("I was in init Video Add");
     super.initState();
   }
@@ -51,35 +54,58 @@ class _AddVideoWidgetState extends State<AddVideoWidget> {
           Spacer(),
           SizedBox(
             width: MediaQuery.of(context).size.width*0.75,
-            child: Consumer<AddVideoProvider>(
-              builder: (context,provider,child) {
-                return ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor:ColorConstant.kSecondaryColor),
-                    onPressed: () async{
-                      final ImagePicker picker = ImagePicker();
-                      XFile? video=await picker.pickVideo(source: ImageSource.gallery);
-                      if(video!=null){
-
-                        videoLocation=video.path;
-                        provider.setLocation(video.path);
-                        setState(() {
-
-                        });
-                      }
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                videoLocation!=null?ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor:Colors.green),
+                    onPressed: () {
+                      Navigator.pushNamed(context, PlaySpecificVideo.route,arguments: VideoModel(id: -1, name: "", location: videoLocation??"", repetition: -1, length: -1, isDefault: false));
 
                     },
                     child: Padding(
                       padding: EdgeInsets.all(10),
                       child: Text(
-                        videoLocation!=null?"Change Video":"Choose Video",
+                        "Play Video",
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold
                         ),
                       ),
                     )
-                );
-              }
+                ):SizedBox(),
+                SizedBox(height: videoLocation!=null?15:0,),
+                Consumer<AddVideoProvider>(
+                  builder: (context,provider,child) {
+                    return ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor:ColorConstant.kSecondaryColor),
+                        onPressed: () async{
+                          final ImagePicker picker = ImagePicker();
+                          XFile? video=await picker.pickVideo(source: ImageSource.gallery);
+                          if(video!=null){
+
+                            videoLocation=video.path;
+                            provider.setLocation(video.path);
+                            setState(() {
+
+                            });
+                          }
+
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            videoLocation!=null?"Change Video":"Choose Video",
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        )
+                    );
+                  }
+                ),
+              ],
             ),
           ),
           SizedBox(height: 40,)

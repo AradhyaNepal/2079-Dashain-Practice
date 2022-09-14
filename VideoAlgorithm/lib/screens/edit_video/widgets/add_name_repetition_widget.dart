@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:video_algorithm/common/class/custom_snackbar.dart';
 import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/common/theme.dart';
@@ -121,7 +122,8 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
                           isSaving=false;
                           provider.setSaving(false);
                         });
-                        await Provider.of<VideosDatabase>(context,listen: false).getVideosList(notify: true);
+                        await Provider.of<VideosDatabase>(context,listen: false).extractVideosList(notify: true);
+                        showCustomSnackBar(context, "Successfully Added");
                         Navigator.pop(context);
                       },
                       child: Padding(

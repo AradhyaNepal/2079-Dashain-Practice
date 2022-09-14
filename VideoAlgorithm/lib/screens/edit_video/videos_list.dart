@@ -4,6 +4,7 @@ import 'package:video_algorithm/common/class/custom_snackbar.dart';
 import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/screens/edit_video/add_video.dart';
+import 'package:video_algorithm/screens/edit_video/video_timeframe.dart';
 import 'package:video_algorithm/screens/edit_video/widgets/video_list_widget.dart';
 
 class VideosList extends StatelessWidget {
@@ -20,23 +21,36 @@ class VideosList extends StatelessWidget {
           title: Row(
             children: [
               Text(
-                  "Your Videos"
+                  "Videos"
               ),
               Spacer(),
+
               Consumer<VideosDatabase>(
                 builder: (context,provider,child) {
-                  return IconButton(
-                    onPressed: (){
-                      if(provider.videosList.length==10){
-                        showCustomSnackBar(context, "Maximum 10 Videos Allowed");
-                      }else{
-                        Navigator.of(context).pushNamed(AddVideoPage.route);
-                      }
-                    },
-                    icon: Icon(
-                        Icons.add
-                    ),
-                  );
+                  return provider.isInitialized?Row(
+                    children: [
+                      IconButton(
+                          onPressed: (){
+                            Navigator.pushNamed(context, VideoTimeFrameSetting.route);
+                          },
+                          icon: Icon(
+                              Icons.settings
+                          )
+                      ),
+                      IconButton(
+                        onPressed: (){
+                          if(provider.videosList.length==10){
+                            showCustomSnackBar(context, "Maximum 10 Videos Allowed");
+                          }else{
+                            Navigator.of(context).pushNamed(AddVideoPage.route);
+                          }
+                        },
+                        icon: Icon(
+                            Icons.add
+                        ),
+                      ),
+                    ],
+                  ):CircularProgressIndicator();
                 }
               )
             ],

@@ -4,6 +4,7 @@ import 'package:video_algorithm/common/color.dart';
 
 showCustomSnackBar(BuildContext context,String message){
   ScaffoldMessenger.of(context).showSnackBar(
+
       SnackBar(
           content: Text(
               message,
@@ -12,6 +13,7 @@ showCustomSnackBar(BuildContext context,String message){
               fontWeight: FontWeight.bold
             ),
           ),
+
         backgroundColor: ColorConstant.kSecondaryColor.withOpacity(0.8),
       ),
   );
