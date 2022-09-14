@@ -10,6 +10,7 @@ import 'package:video_algorithm/common/class/time_dealer.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/metadata/model/videos_model.dart';
 import 'package:video_algorithm/screens/edit_video/edit_video.dart';
+import 'package:video_algorithm/screens/edit_video/play_specific_video.dart';
 
 class VideoListWidget extends StatefulWidget {
   const VideoListWidget({
@@ -40,7 +41,10 @@ class _VideoListWidgetState extends State<VideoListWidget> {
                 padding: EdgeInsets.all(17.5),
                 child: IconButton(
                     iconSize: 50,
-                  onPressed: (){},
+                  onPressed: (){
+
+                      Navigator.pushNamed(context, PlaySpecificVideo.route,arguments: widget.value);
+                  },
                   icon: Icon(
                       Icons.play_arrow_rounded,
                       color: ColorConstant.kPrimaryColor,
