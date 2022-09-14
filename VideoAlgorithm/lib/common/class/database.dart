@@ -81,12 +81,22 @@ class VideosDatabase with ChangeNotifier{
 
   }
 
-
+  Future<void> updateAVideo(int id,int repetition,String name) async{
+    await db!.update(
+        videoTableName,
+        {
+          repetitionCol:repetition,
+          nameCol:name
+        },
+        where:"$idCol=?",
+        whereArgs: [id]
+    );
+    await getVideosList(notify: true);
+  }
 
   Future<void> deleteAVideo(int id) async{
     await db!.delete(videoTableName,where:"$idCol=?",whereArgs: [id] );
-    await getVideosList();
-    notifyListeners();
+    await getVideosList(notify: true);
   }
   Future<void> getVideosList ({bool notify=false}) async{
     videosList.clear();

@@ -4,9 +4,10 @@ class AddVideoProvider with ChangeNotifier{
   String? videoLocation;
   String? videoName;
   int repetition=1;
+  bool isSaving=false;
 
   bool canAdd(){
-    return videoLocation!=null && videoName!=null && videoName!="";
+    return videoLocation!=null && videoName!=null && videoName!.trim()!="";
   }
 
   void setRep(int rep){
@@ -21,6 +22,11 @@ class AddVideoProvider with ChangeNotifier{
 
   void setLocation(String loc){
     videoLocation=loc;
+    notifyListeners();
+  }
+
+  void setSaving(bool saving){
+    isSaving=saving;
     notifyListeners();
   }
 }

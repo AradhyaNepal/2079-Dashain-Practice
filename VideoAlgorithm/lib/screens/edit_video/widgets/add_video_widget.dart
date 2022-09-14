@@ -22,7 +22,7 @@ class _AddVideoWidgetState extends State<AddVideoWidget> {
   void initState() {
     // TODO: implement initState
     videoLocation=Provider.of<AddVideoProvider>(context,listen: false).videoLocation;
-    print("I was in init");
+    print("I was in init Video Add");
     super.initState();
   }
   @override
@@ -71,7 +71,7 @@ class _AddVideoWidgetState extends State<AddVideoWidget> {
                     child: Padding(
                       padding: EdgeInsets.all(10),
                       child: Text(
-                        videoLocation!=null?"Update Video":"Choose Video",
+                        videoLocation!=null?"Change Video":"Choose Video",
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold

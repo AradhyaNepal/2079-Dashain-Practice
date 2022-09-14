@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 15,),
               SizedBox(
                 width: 250,
                 child: ElevatedButton(
@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
                     )
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 15,),
               SizedBox(
                 width: 250,
                 child: ElevatedButton(

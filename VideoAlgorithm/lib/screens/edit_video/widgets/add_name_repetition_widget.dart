@@ -24,6 +24,14 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
   String nameValue="";
   int repetitionValue=1;
   bool isSaving=false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    print("I was in init Detail Add");
+    isSaving=Provider.of<AddVideoProvider>(this.context,listen: false).isSaving;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<AddVideoProvider>(
@@ -82,14 +90,17 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
                 ),
 
                 Spacer(),
-                SizedBox(
+                isSaving?
+                CircularProgressIndicator()
+                    :SizedBox(
                   width: MediaQuery.of(context).size.width*0.75,
-                  child: isSaving || true?CircularProgressIndicator():ElevatedButton(
+                  child: ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor:ColorConstant.kSecondaryColor),
                       onPressed: !provider.canAdd()?null:
                           () async{
                         setState(() {
                           isSaving=true;
+                          provider.setSaving(true);
                         });
                         final String duplicateFilePath = (await getApplicationDocumentsDirectory()).path;
                         final fileName = basename(provider.videoLocation!);
@@ -98,17 +109,19 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
                         VideoPlayerController controller = VideoPlayerController.file(File(provider.videoLocation!));
                         await controller.initialize();
                         await Provider.of<VideosDatabase>(context,listen: false).insertVideoIntoDatabase(
-                            name: fileName,
+                            name: nameValue.trim(),
                             location: path,
                             repetition: provider.repetition,
                             isDefault: false,
-                            videoLength: controller.value.duration.inSeconds
+                            videoLength: controller.value.duration.inSeconds,
+
                         );
                         await controller.dispose();
                         setState(() {
                           isSaving=false;
+                          provider.setSaving(false);
                         });
-                        await Provider.of<VideosDatabase>(context,listen: false).getVideosList();
+                        await Provider.of<VideosDatabase>(context,listen: false).getVideosList(notify: true);
                         Navigator.pop(context);
                       },
                       child: Padding(

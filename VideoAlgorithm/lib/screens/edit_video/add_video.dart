@@ -6,9 +6,15 @@ import 'package:video_algorithm/screens/edit_video/provider/add_video_provider.d
 import 'package:video_algorithm/screens/edit_video/widgets/add_name_repetition_widget.dart';
 import 'package:video_algorithm/screens/edit_video/widgets/add_video_widget.dart';
 
-class AddVideoPage extends StatelessWidget {
+class AddVideoPage extends StatefulWidget {
   static const String route="AddVideo";
   AddVideoPage({Key? key}) : super(key: key);
+
+  @override
+  State<AddVideoPage> createState() => _AddVideoPageState();
+}
+
+class _AddVideoPageState extends State<AddVideoPage> {
   final PageController pageController=PageController(initialPage: 0);
 
   @override
@@ -92,6 +98,13 @@ class AddVideoPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    pageController.dispose();
+    super.dispose();
   }
 }
 

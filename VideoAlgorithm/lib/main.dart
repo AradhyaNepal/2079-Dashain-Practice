@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/screens/edit_video/add_video.dart';
+import 'package:video_algorithm/screens/edit_video/edit_video.dart';
 import 'package:video_algorithm/screens/edit_video/videos_list.dart';
 import 'package:video_algorithm/screens/home_page/home_page.dart';
 import 'package:video_algorithm/screens/home_page/splash_page.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
           HomePage.route:(context)=>const HomePage(),
           VideosList.route:(context)=>const VideosList(),
           AddVideoPage.route:(context)=> AddVideoPage(),
+          EditVideo.route:(context)=> const EditVideo(),
         },
       ),
     );
