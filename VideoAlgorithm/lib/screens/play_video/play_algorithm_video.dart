@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/metadata/model/videos_model.dart';
 import 'package:video_algorithm/screens/play_video/provider/algorithm_video_provider.dart';
 import 'package:video_player/video_player.dart';
@@ -39,19 +40,42 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
 
   void setUpVideoTimer() async{
     final provider = Provider.of<AlgorithmVideoProvider>(context, listen: false);
-    await playVideo(provider.timeFrameVideos[index]);
+    provider.videoClosed();//To dispose old data
+    provider.videoStarted();//To shuffle the list
+    await playVideo(provider.timeFrameVideos[index]);//In first play these is never old backup
     setState(() {});
     print("I was here 2");
-    index++;
+
     timer =Timer.periodic(Duration(seconds: provider.oneRepTime), (timer) async {
+      for(int j=0;j<provider.backupVideos.length;j++){
+        //Remove old backup
+        if(provider.backupVideos[j].id==provider.timeFrameVideos[index].id){
+          provider.backupVideos.removeAt(j);
+        }
+      }
+      provider.backupVideos.add(
+        //Add new backup so than on next repetition video could be played from paused location
+          VideoBackup(
+              id: provider.timeFrameVideos[index].id,
+              playedTime: controller!.value.position.inSeconds
+          )
+      );
+      index++;
       if(index<provider.timeFrameVideos.length){
         controller!.dispose();
         chewieController!.dispose();
         controller=null;
         chewieController=null;
-        await playVideo(provider.timeFrameVideos[index]);
+
+        //Find Old backup duration, if video was paused before and now we need to start it from that location
+        int backupTime=0;
+        for(int j=0;j<provider.backupVideos.length;j++){
+          if(provider.backupVideos[j].id==provider.timeFrameVideos[index].id){
+            backupTime=provider.backupVideos[j].playedTime;//Last played time added. Although its always one time
+          }
+        }
+        await playVideo(provider.timeFrameVideos[index],initialDuration: backupTime);
         setState(() {
-          index++;
         });
       }
       else{
@@ -64,7 +88,7 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
               return AlertDialog(
                 title: Text("Play Again"),
                 content: Text(
-                  "Do you want to shuffle the playlist and play the video agein.\nIf no, this page will close."
+                  "Do you want to shuffle the playlist and play the video again.\nIf no, this page will close."
                 ),
                 actions: [
                   TextButton(
@@ -101,13 +125,15 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
 
   }
 
-  Future<void> playVideo(VideoModel model) async{
+  Future<void> playVideo(VideoModel model,{int initialDuration=0}) async{
     if (model.isDefault) {
       controller = VideoPlayerController.asset(model.location);
     } else {
       controller = VideoPlayerController.file(File(model.location));
     }
+    print("Play Duration $initialDuration");
     await controller!.initialize();
+    controller!.seekTo(Duration(seconds: initialDuration));
     chewieController = ChewieController(
       fullScreenByDefault: false,
       allowFullScreen: false,
@@ -130,9 +156,88 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
           width: size.width,
           color: Colors.black,
           child: initialized
-              ? Chewie(
-                  controller: chewieController!,
-                )
+              ? Consumer<AlgorithmVideoProvider>(
+                builder: (context,provider,child) {
+                  return Stack(
+                    children: [
+
+                      Positioned.fill(
+                        child: Chewie(
+                            controller: chewieController!,
+                          ),
+                      ),
+                      Positioned(
+                        bottom: 50,
+                        left: 50,
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          color: Colors.white.withOpacity(0.8),
+                          child: Text(
+                            provider.timeFrameVideos[index].name,
+                            style: TextStyle(
+                              color: ColorConstant.kSecondaryColor,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold
+                          ),
+                          ),
+                        ),
+                      ),
+                      index<provider.timeFrameVideos.length-1?Positioned(
+                        bottom: 50,
+                        right: 50,
+                        child: Container(
+
+                          padding: EdgeInsets.all(10),
+                          color: Colors.white.withOpacity(0.8),
+                          child: Text(
+                              "Next: ${provider.timeFrameVideos[index+1].name}",
+                            style: TextStyle(
+                            color: ColorConstant.kSecondaryColor,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold
+                          ),
+                          ),
+                        ),
+                      ):SizedBox(),
+                      Positioned(
+                          top: 20,
+                          right: 30,
+                          child: IconButton(
+                            onPressed: (){
+                              showDialog(
+                                  context: context,
+                                  builder: (context){
+                                    return AlertDialog(
+                                      title: Text("Time Frame Info"),
+                                      content: SingleChildScrollView(
+                                        physics: BouncingScrollPhysics(),
+                                        child: Text(
+                                            provider.getTimeFrameDetails(index)
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: (){
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Okay!")
+                                        )
+                                      ],
+                                    );
+                                  }
+                              );
+                            },
+                            icon: Icon(
+                              Icons.info,
+                              size: 40,
+                              color: ColorConstant.kSecondaryColor,
+                            ),
+                          )
+                      ),
+                    ],
+                  );
+                }
+              )
               : Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -158,6 +263,7 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
     if (timer != null) {
       timer?.cancel();
     }
+    Provider.of<AlgorithmVideoProvider>(context,listen: false).videoClosed();
     super.dispose();
   }
 }

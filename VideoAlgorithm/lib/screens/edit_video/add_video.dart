@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:video_algorithm/common/class/custom_snackbar.dart';
 import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/screens/edit_video/provider/add_video_provider.dart';
 import 'package:video_algorithm/screens/edit_video/widgets/add_name_repetition_widget.dart';
@@ -16,6 +17,15 @@ class AddVideoPage extends StatefulWidget {
 
 class _AddVideoPageState extends State<AddVideoPage> {
   final PageController pageController=PageController(initialPage: 0);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      showCustomSnackBar(context, "Make Sure Not to add very Long Sized Video...");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

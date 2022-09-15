@@ -42,8 +42,7 @@ class AlgorithmVideoProvider with ChangeNotifier{
       }
     }
     minTime=totalReps*5;//Every video and its rep must be played for minimum 5 seconds
-    currentTime=maxTime;//Default
-    oneRepTime=currentTime~/timeFrameVideos.length;
+    findAndSetToDefault();
   }
 
 
@@ -54,14 +53,15 @@ class AlgorithmVideoProvider with ChangeNotifier{
     if(videoPlaying==false){
       videoPlaying=true;
       timeFrameVideos.shuffle();
-      notifyListeners();//We need to provide new value of time frame to the list
+      notifyListeners();
     }
   }
 
-  String getTimeFrameDetails(){
+  String getTimeFrameDetails(int currentPlaying){
     String text="Total Time : ${TimeDealer.getTimeFromSecond(currentTime)}\nEvery Repetition Time: ${TimeDealer.getTimeFromSecond(oneRepTime)}\n";
-    for(int i =1;i<=timeFrameVideos.length;i++){
-      text="$i) $text${timeFrameVideos[i].name}\n";
+    for(int i =0;i<timeFrameVideos.length;i++){
+      bool playing=i==currentPlaying;
+      text="$text${i+1}) ${timeFrameVideos[i].name} ${playing?"(Playing)":""}\n";
     }
     return text;
   }
@@ -69,6 +69,11 @@ class AlgorithmVideoProvider with ChangeNotifier{
   void videoClosed(){
     backupVideos.clear();
     videoPlaying=false;
+  }
+
+  void findAndSetToDefault(){
+    currentTime=minTime*2;//Default
+    oneRepTime=currentTime~/timeFrameVideos.length;
   }
 
 

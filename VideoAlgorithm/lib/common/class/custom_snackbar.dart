@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:video_algorithm/common/color.dart';
 
 showCustomSnackBar(BuildContext context,String message){
+  ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(
 
       SnackBar(
@@ -15,6 +16,7 @@ showCustomSnackBar(BuildContext context,String message){
           ),
 
         backgroundColor: ColorConstant.kSecondaryColor.withOpacity(0.8),
+
       ),
   );
 
