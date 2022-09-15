@@ -1,5 +1,7 @@
 # video_algorithm
 
+## APK Link [Touch Me!](https://drive.google.com/file/d/1i6mEz2ML1du7pzj8HADgExSrI398ir-A/view?usp=sharing)
+
 ## Question
 play videos from a directory
 2. every video have their play repetition | can use database or make
@@ -22,6 +24,15 @@ that time, after played continue the paused video
 
 
 ## Algorithm
-![Algorithm App](./Algorithm.jpg)
+![Algorithm App](./ReadmeResource/Algorithm.jpg)
 
+## Some Screenshots
+
+![One](./ReadmeResource/One.png)
+![Two](./ReadmeResource/Two.png)
+![Three](./ReadmeResource/Three.png)
+![Four](./ReadmeResource/Four.png)
+![Five](./ReadmeResource/Five.png)
+![Six](./ReadmeResource/Six.png)
+![Seven](./ReadmeResource/Seven.png)
  

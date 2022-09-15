@@ -55,8 +55,8 @@ class _PlaySpecificVideoState extends State<PlaySpecificVideo> {
         body: loading
             ? Center(
           child: CircularProgressIndicator(),
-        ): SizedBox(
-
+        ): Container(
+          color: Colors.black,
           height: size.height,
           width: size.width,
           child: Stack(
