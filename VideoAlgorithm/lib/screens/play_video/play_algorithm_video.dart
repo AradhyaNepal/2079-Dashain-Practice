@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -20,9 +18,9 @@ class PlayAlgorithmVideo extends StatefulWidget {
 }
 
 class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
-  ChewieController? chewieController;
+  ValueNotifier<int> indexNotifier=ValueNotifier(0);
   VideoPlayerController? controller;
-  int index = 0;
+
   Timer? timer;
   bool initialized=false;
 
@@ -42,87 +40,89 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
     final provider = Provider.of<AlgorithmVideoProvider>(context, listen: false);
     provider.videoClosed();//To dispose old data
     provider.videoStarted();//To shuffle the list
-    await playVideo(provider.timeFrameVideos[index]);//In first play these is never old backup
+    await playVideo(provider.timeFrameVideos[indexNotifier.value]);//In first play these is never old backup
     setState(() {});
     print("I was here 2");
 
     timer =Timer.periodic(Duration(seconds: provider.oneRepTime), (timer) async {
-      for(int j=0;j<provider.backupVideos.length;j++){
-        //Remove old backup
-        if(provider.backupVideos[j].id==provider.timeFrameVideos[index].id){
-          provider.backupVideos.removeAt(j);
-        }
-      }
-      provider.backupVideos.add(
-        //Add new backup so than on next repetition video could be played from paused location
-          VideoBackup(
-              id: provider.timeFrameVideos[index].id,
-              playedTime: controller!.value.position.inSeconds
-          )
-      );
-      index++;
-      if(index<provider.timeFrameVideos.length){
-        controller!.dispose();
-        chewieController!.dispose();
-        controller=null;
-        chewieController=null;
-
-        //Find Old backup duration, if video was paused before and now we need to start it from that location
-        int backupTime=0;
-        for(int j=0;j<provider.backupVideos.length;j++){
-          if(provider.backupVideos[j].id==provider.timeFrameVideos[index].id){
-            backupTime=provider.backupVideos[j].playedTime;//Last played time added. Although its always one time
-          }
-        }
-        await playVideo(provider.timeFrameVideos[index],initialDuration: backupTime);
-        setState(() {
-        });
-      }
-      else{
-        timer.cancel();
-        controller!.pause();
-        chewieController!.pause();
-        showDialog(
-            context: context,
-            builder: (controller){
-              return AlertDialog(
-                title: Text("Play Again"),
-                content: Text(
-                  "Do you want to shuffle the playlist and play the video again.\nIf no, this page will close."
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: (){
-                        Navigator.pop(context,true);
-                      },
-                      child: Text("Yes")
-                  ),
-                  TextButton(
-                      onPressed: (){
-                        Navigator.pop(context,false);
-                      },
-                      child: Text(
-                        "No",
-                        style: TextStyle(
-                          color: Colors.black
-                        ),
-                      )
-                  ),
-                ],
-              );
-            }
-        ).then((value) {
-          if(value==true){
-            index=0;
-            setUpVideoTimer();
-          }else{
-            Navigator.pop(context);
-          }
-        });
-      }
+      nextAndPlayAgainCheck(provider);
     }
     );
 
+  }
+
+  void nextAndPlayAgainCheck(AlgorithmVideoProvider provider)async{
+
+    for(int j=0;j<provider.backupVideos.length;j++){
+      //Remove old backup
+      if(provider.backupVideos[j].id==provider.timeFrameVideos[indexNotifier.value].id){
+        provider.backupVideos.removeAt(j);
+      }
+    }
+    provider.backupVideos.add(
+      //Add new backup so than on next repetition video could be played from paused location
+        VideoBackup(
+            id: provider.timeFrameVideos[indexNotifier.value].id,
+            playedTime: controller!.value.position.inSeconds
+        )
+    );
+    indexNotifier.value++;
+    if(indexNotifier.value<provider.timeFrameVideos.length){
+      controller!.dispose();
+      controller=null;
+
+      //Find Old backup duration, if video was paused before and now we need to start it from that location
+      int backupTime=0;
+      for(int j=0;j<provider.backupVideos.length;j++){
+        if(provider.backupVideos[j].id==provider.timeFrameVideos[indexNotifier.value].id){
+          backupTime=provider.backupVideos[j].playedTime;//Last played time added. Although its always one time
+        }
+      }
+      await playVideo(provider.timeFrameVideos[indexNotifier.value],initialDuration: backupTime);
+      setState(() {
+      });
+    }
+    else{
+      timer!.cancel();
+      controller!.pause();
+      showDialog(
+          context: context,
+          builder: (controller){
+            return AlertDialog(
+              title: Text("Play Again"),
+              content: Text(
+                  "Do you want to shuffle the playlist and play the video again.\nIf no, this page will close."
+              ),
+              actions: [
+                TextButton(
+                    onPressed: (){
+                      Navigator.pop(context,true);
+                    },
+                    child: Text("Yes")
+                ),
+                TextButton(
+                    onPressed: (){
+                      Navigator.pop(context,false);
+                    },
+                    child: Text(
+                      "No",
+                      style: TextStyle(
+                          color: Colors.black
+                      ),
+                    )
+                ),
+              ],
+            );
+          }
+      ).then((value) {
+        if(value==true){
+          indexNotifier.value=0;
+          setUpVideoTimer();
+        }else{
+          Navigator.pop(context);
+        }
+      });
+    }
   }
 
   Future<void> playVideo(VideoModel model,{int initialDuration=0}) async{
@@ -134,14 +134,8 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
     print("Play Duration $initialDuration");
     await controller!.initialize();
     controller!.seekTo(Duration(seconds: initialDuration));
-    chewieController = ChewieController(
-      fullScreenByDefault: false,
-      allowFullScreen: false,
-      showControls: false,
-      videoPlayerController: controller!,
-      autoPlay: true,
-      looping: true,
-    );
+    controller!.setLooping(true);
+    controller!.play();
     initialized=true;
     print("I was here 1");
   }
@@ -162,9 +156,9 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
                     children: [
 
                       Positioned.fill(
-                        child: Chewie(
-                            controller: chewieController!,
-                          ),
+                        child: VideoPlayer(
+                          controller!
+                        )
                       ),
                       Positioned(
                         bottom: 50,
@@ -173,7 +167,7 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
                           padding: EdgeInsets.all(10),
                           color: Colors.white.withOpacity(0.8),
                           child: Text(
-                            provider.timeFrameVideos[index].name,
+                            provider.timeFrameVideos[indexNotifier.value].name,
                             style: TextStyle(
                               color: ColorConstant.kSecondaryColor,
                               fontSize: 25,
@@ -182,7 +176,23 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
                           ),
                         ),
                       ),
-                      index<provider.timeFrameVideos.length-1?Positioned(
+                      indexNotifier.value<provider.timeFrameVideos.length-1?Positioned(
+                        top: 5,
+                        left: 5,
+                        child: TextButton(
+                          onPressed: (){
+                            timer!.cancel();
+                            nextAndPlayAgainCheck(Provider.of<AlgorithmVideoProvider>(context,listen: false));
+                            timer=Timer.periodic(Duration(seconds: provider.oneRepTime), (timer) async {
+                              nextAndPlayAgainCheck(provider);
+                            });
+                          },
+                          child: Text(
+                            "Skip"
+                          ),
+                        ),
+                      ):SizedBox(),
+                      indexNotifier.value<provider.timeFrameVideos.length-1?Positioned(
                         bottom: 50,
                         right: 50,
                         child: Container(
@@ -190,7 +200,7 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
                           padding: EdgeInsets.all(10),
                           color: Colors.white.withOpacity(0.8),
                           child: Text(
-                              "Next: ${provider.timeFrameVideos[index+1].name}",
+                              "Next: ${provider.timeFrameVideos[indexNotifier.value+1].name}",
                             style: TextStyle(
                             color: ColorConstant.kSecondaryColor,
                             fontSize: 25,
@@ -207,22 +217,27 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
                               showDialog(
                                   context: context,
                                   builder: (context){
-                                    return AlertDialog(
-                                      title: Text("Time Frame Info"),
-                                      content: SingleChildScrollView(
-                                        physics: BouncingScrollPhysics(),
-                                        child: Text(
-                                            provider.getTimeFrameDetails(index)
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: (){
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("Okay!")
-                                        )
-                                      ],
+                                    return ValueListenableBuilder(
+                                      valueListenable: indexNotifier,
+                                      builder: (context,value,child) {
+                                        return AlertDialog(
+                                          title: Text("Time Frame Info"),
+                                          content: SingleChildScrollView(
+                                            physics: BouncingScrollPhysics(),
+                                            child: Text(
+                                                provider.getTimeFrameDetails(indexNotifier.value)
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: (){
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Okay!")
+                                            )
+                                          ],
+                                        );
+                                      }
                                     );
                                   }
                               );
@@ -247,19 +262,16 @@ class _PlayAlgorithmVideoState extends State<PlayAlgorithmVideo> {
   }
 
   @override
-  void dispose() {
+  void dispose(){
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ]);
 
     if(controller!=null){
       controller!.dispose();
 
     }
-    if( chewieController!=null){
-      chewieController!.dispose();
-    }
-
     if (timer != null) {
       timer?.cancel();
     }

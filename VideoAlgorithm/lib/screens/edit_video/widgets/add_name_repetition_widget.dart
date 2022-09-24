@@ -31,6 +31,8 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
     // TODO: implement initState
     print("I was in init Detail Add");
     isSaving=Provider.of<AddVideoProvider>(this.context,listen: false).isSaving;
+    nameValue=Provider.of<AddVideoProvider>(this.context,listen: false).videoName??"";
+    repetitionValue=Provider.of<AddVideoProvider>(this.context,listen: false).repetition;
     super.initState();
   }
   @override
@@ -56,7 +58,8 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
 
 
                 Spacer(),
-                TextField(
+                TextFormField(
+                  initialValue: nameValue,
                   decoration: CustomTheme.getDecorationWithLabel("Video Name"),
                   onChanged: (value){
                     nameValue=value;
@@ -149,4 +152,6 @@ class _AddNameRepetitionWidgetState extends State<AddNameRepetitionWidget> {
       }
     );
   }
+
+
 }

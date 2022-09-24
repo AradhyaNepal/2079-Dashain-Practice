@@ -1,6 +1,6 @@
 # video_algorithm
 
-## APK Link [Touch Me!](https://drive.google.com/file/d/1i6mEz2ML1du7pzj8HADgExSrI398ir-A/view?usp=sharing)
+## APK Link [Touch Me!](https://drive.google.com/file/d/1hOsh0kXDQSl1gf9ksXnU5Xznm7Q7pnnd/view?usp=sharing)
 
 ## Question
 play videos from a directory
@@ -24,15 +24,18 @@ that time, after played continue the paused video
 
 
 ## Algorithm
-![Algorithm App](./ReadmeResource/Algorithm.jpg)
+<p align="center">
+<img src="./ReadmeResource/Algorithm.jpg" width="500"/>
+</p>
 
 ## Some Screenshots
-
-![One](./ReadmeResource/One.png)
-![Two](./ReadmeResource/Two.png)
-![Three](./ReadmeResource/Three.png)
-![Four](./ReadmeResource/Four.png)
-![Five](./ReadmeResource/Five.png)
-![Six](./ReadmeResource/Six.png)
-![Seven](./ReadmeResource/Seven.png)
+<p align="center">
+<img src="./ReadmeResource/One.png" width="400"/>
+<img src="./ReadmeResource/Three.png" width="400"/>
+<img src="./ReadmeResource/Four.png" width="400"/>
+<img src="./ReadmeResource/Five.png" width="400"/>
+<img src="./ReadmeResource/Six.png" width="400"/>
+<img src="./ReadmeResource/Seven.png" width="400"/>
+<img src="./ReadmeResource/Two.png" width="800"/>
+</p>
  

@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_algorithm/common/class/database.dart';
 import 'package:video_algorithm/common/class/time_dealer.dart';
+import 'package:video_algorithm/metadata/assets_location.dart';
 import 'package:video_algorithm/metadata/model/videos_model.dart';
 class VideoBackup{
   int id,playedTime;
@@ -20,18 +22,26 @@ class AlgorithmVideoProvider with ChangeNotifier{
   int oneRepTime=0;
   List<VideoBackup> backupVideos=[];
   VideosDatabase videosDatabase;
+  bool initialized=false;
   AlgorithmVideoProvider({
     required this.videosDatabase
   }){
+
     initialize();
   }
 
-  void updateCurrentTime(int currentTime){
+  int get defaultTime=>minTime*2;
+  void updateCurrentTime(int currentTime) async{
     this.currentTime=currentTime;
     oneRepTime=currentTime~/timeFrameVideos.length;
+    final sharedPref=await SharedPreferences.getInstance();
+    await sharedPref.setInt(AssetsLocation.currentTimeSharedKey, currentTime);
     notifyListeners();
   }
-  void initialize(){
+
+
+  void initialize() async{
+    if(!videosDatabase.isInitialized)return;
     int totalReps=0;
     for(VideoModel videoModel in videosDatabase.videosList){
       maxTime=videoModel.length*videoModel.repetition+maxTime;//All videos and its reps can be according to its full length
@@ -42,9 +52,34 @@ class AlgorithmVideoProvider with ChangeNotifier{
       }
     }
     minTime=totalReps*5;//Every video and its rep must be played for minimum 5 seconds
-    findAndSetToDefault();
+    await setOrGetCurrentTime();
+
+    oneRepTime=currentTime~/timeFrameVideos.length;
+    initialized=true;
+
+    notifyListeners();
+
   }
 
+  Future<void> setOrGetCurrentTime() async{
+    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+    int? currentTimeSavedValue=sharedPreferences.getInt(AssetsLocation.currentTimeSharedKey);
+    if(currentTimeSavedValue==null){
+      currentTime=minTime*2;//Default
+      await sharedPreferences.setInt(AssetsLocation.currentTimeSharedKey, currentTime);
+
+    }else{
+      if(currentTimeSavedValue<minTime){
+        currentTime=minTime;
+      }
+      else if(currentTimeSavedValue>maxTime){
+        currentTime=maxTime;
+      }else{
+        currentTime=currentTimeSavedValue;
+      }
+    }
+
+  }
 
 
 
@@ -71,10 +106,7 @@ class AlgorithmVideoProvider with ChangeNotifier{
     videoPlaying=false;
   }
 
-  void findAndSetToDefault(){
-    currentTime=minTime*2;//Default
-    oneRepTime=currentTime~/timeFrameVideos.length;
-  }
+
 
 
   void changeCurrentTime(int currentTime){

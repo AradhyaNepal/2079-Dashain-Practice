@@ -12,7 +12,10 @@ class VideosDatabase with ChangeNotifier{
   bool videosLoading=true;
 
 
-  void initialize() async{
+  VideosDatabase(){
+    initialize();
+  }
+  Future<void> initialize() async{
     var databasesPath = await getDatabasesPath();
     db = await openDatabase(databasesPath+Constant.databaseName, version: 1,
         onCreate: (Database db, int version) async {

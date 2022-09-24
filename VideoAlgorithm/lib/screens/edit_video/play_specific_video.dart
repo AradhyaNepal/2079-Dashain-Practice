@@ -88,6 +88,7 @@ class _PlaySpecificVideoState extends State<PlaySpecificVideo> {
   void dispose() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ]);
     controller.dispose();
     chewieController.dispose();

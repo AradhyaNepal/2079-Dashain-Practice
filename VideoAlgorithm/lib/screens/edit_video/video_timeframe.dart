@@ -14,19 +14,11 @@ class VideoTimeFrameSetting extends StatefulWidget {
 
 class _VideoTimeFrameSettingState extends State<VideoTimeFrameSetting> {
   int currentTime=0;
-  bool loading=true;
-  late AlgorithmVideoProvider provider;
+  bool firstLoading=true;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      provider=Provider.of<AlgorithmVideoProvider>(context,listen: false);
-      currentTime=provider.currentTime;
-      loading=false;
-      setState(() {
 
-      });
-    });
   }
   @override
   Widget build(BuildContext context) {
@@ -40,64 +32,92 @@ class _VideoTimeFrameSettingState extends State<VideoTimeFrameSetting> {
             height: size.height,
             width: size.width,
             color: ColorConstant.kPrimaryColor,
-            child: loading?
-                Center(
-                  child: CircularProgressIndicator(),
-                )
-                :Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Spacer(),
-                Text(
-                    "Time Frame",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                    color: ColorConstant.kSecondaryColor
-                  ),
-                ),
-                SizedBox(height: 10,),
-                Slider(
-                    min: provider.minTime.toDouble(),
-                    max: provider.maxTime.toDouble(),
-                    value: currentTime.toDouble(),
-                    activeColor: ColorConstant.kSecondaryColor,
-                    onChanged: (value){
-                      setState(() {
-                        currentTime=value.toInt();
-                      });
-                    }
-                ),
+            child: Consumer<AlgorithmVideoProvider>(
+              builder: (context,provider,child) {
+                if(firstLoading){
+                  currentTime=provider.currentTime;
+                  firstLoading=false;
+                }
+                print("Min Time ${provider.minTime}");
+                print("Provider Current Time ${provider.currentTime}");
+                print("State Current Time $currentTime");
+                print("Max Time ${provider.maxTime}");
+                return !provider.initialized?
+                    Center(
+                      child: CircularProgressIndicator(),
+                    )
+                    :Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Spacer(),
+                    Text(
+                        "Time Frame",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: ColorConstant.kSecondaryColor
+                      ),
+                    ),
+                    SizedBox(height: 10,),
+                    Slider(
+                        min: provider.minTime.toDouble(),
+                        max: provider.maxTime.toDouble(),
+                        value: currentTime.toDouble(),
+                        activeColor: ColorConstant.kSecondaryColor,
+                        onChanged: (value){
+                          setState(() {
+                            currentTime=value.toInt();
+                          });
+                        }
+                    ),
 
-                SizedBox(height: 10,),
-                Text(
-                    TimeDealer.getTimeFromSecond(currentTime),
-                  style: TextStyle(
-                    fontSize: 22.5,
-                  ),
-                ),
-                Spacer(),
-                SizedBox(
-                  width: size.width*0.75,
-                  child: ElevatedButton(
+                    SizedBox(height: 10,),
+                    Text(
+                        TimeDealer.getTimeFromSecond(currentTime),
+                      style: TextStyle(
+                        fontSize: 22.5,
+                      ),
+                    ),
+
+                    Spacer(),
+                    TextButton(
                       onPressed: (){
-                        Provider.of<AlgorithmVideoProvider>(context,listen: false).updateCurrentTime(currentTime);
-                        showCustomSnackBar(context, "Successfully Updated!!");
-                        Navigator.pop(context);
+                        setState(() {
+                          currentTime=provider.defaultTime;
+                        });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            "Save",
-                          style: TextStyle(
-                            fontSize: 25
-                          ),
+                      child: Text(
+                        "Find Default Time!!",
+                        style: TextStyle(
+                          fontSize: 17.5,
                         ),
-                      )
-                  ),
-                ),
-                SizedBox(height: 40,)
-              ],
+                      ),
+
+                    ),
+                    SizedBox(height: 10,),
+                    SizedBox(
+                      width: size.width*0.75,
+                      child: ElevatedButton(
+                          onPressed: (){
+                            Provider.of<AlgorithmVideoProvider>(context,listen: false).updateCurrentTime(currentTime);
+                            showCustomSnackBar(context, "Successfully Updated!!");
+                            Navigator.pop(context);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                "Save",
+                              style: TextStyle(
+                                fontSize: 25
+                              ),
+                            ),
+                          )
+                      ),
+                    ),
+                    SizedBox(height: 40,)
+                  ],
+                );
+              }
             )
           ),
         )

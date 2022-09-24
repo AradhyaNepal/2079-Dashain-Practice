@@ -5,6 +5,7 @@ import 'package:video_algorithm/common/color.dart';
 import 'package:video_algorithm/common/constant.dart';
 import 'package:video_algorithm/metadata/assets_location.dart';
 import 'package:video_algorithm/screens/home_page/home_page.dart';
+import 'package:video_algorithm/screens/play_video/provider/algorithm_video_provider.dart';
 
 class SplashPage extends StatefulWidget {
   static const String route="/";
@@ -19,7 +20,12 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<VideosDatabase>(context,listen: false).initialize();
+    initialize();
+
+  }
+  void initialize(){
+    Provider.of<VideosDatabase>(context,listen: false);
+    Provider.of<AlgorithmVideoProvider>(context,listen: false);
     Future.delayed(Duration(seconds: 3),(){
       Navigator.pushReplacementNamed(context, HomePage.route);
     });
